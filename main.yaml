@@ -1,0 +1,14 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]: 🔥 连击!
+  - generic [ref=e4]:
+    - generic [ref=e5]: 🍉 切水果识字乐园
+    - generic [ref=e6]:
+      - generic [ref=e7]: 🍎
+      - generic [ref=e8]: 🍊
+      - generic [ref=e9]: 🍇
+      - generic [ref=e10]: 🍓
+      - generic [ref=e11]: 🍑
+    - paragraph [ref=e12]: 滑动手指切开水果，学习汉字！
+    - generic [ref=e13]:
+      - button "🎮 选择关卡" [ref=e14] [cursor=pointer]
+      - button "⚙️ 关卡管理" [ref=e15] [cursor=pointer]

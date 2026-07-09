@@ -1,0 +1,353 @@
+/* ==================== 全局重置与基础样式 ==================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    overflow: hidden;
+    height: 100vh; width: 100vw;
+    position: relative;
+    user-select: none; -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+}
+
+/* ==================== 按钮系统 ==================== */
+.btn-primary {
+    padding: 14px 45px; font-size: 22px; font-weight: bold; color: white;
+    background: linear-gradient(135deg, #FF6B35, #FF8E53);
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255,107,53,0.4);
+    transition: all 0.3s; letter-spacing: 2px;
+}
+.btn-primary:hover { transform: scale(1.05); }
+.btn-primary:active { transform: scale(0.95); }
+.btn-green {
+    padding: 12px 35px; font-size: 20px; font-weight: bold; color: white;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+    transition: transform 0.2s;
+}
+.btn-green:hover { transform: scale(1.05); }
+.btn-sm {
+    padding: 6px 16px; font-size: 14px; font-weight: bold; color: white;
+    border: none; border-radius: 20px; cursor: pointer; transition: all 0.2s;
+}
+.btn-sm:hover { transform: scale(1.05); }
+.btn-sm.red { background: linear-gradient(135deg, #FF4444, #FF6B6B); }
+.btn-sm.blue { background: linear-gradient(135deg, #4A90D9, #6BB5FF); }
+.btn-sm.green { background: linear-gradient(135deg, #4CAF50, #8BC34A); }
+
+/* ==================== Canvas 与顶部栏 ==================== */
+#gameCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+.topBar {
+    position: fixed; top: 10px; left: 10px; right: 10px; z-index: 10;
+    display: none; justify-content: space-between; align-items: center;
+    padding: 10px 20px; background: rgba(255,255,255,0.9);
+    border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.scoreDisplay { font-size: 20px; font-weight: bold; color: #FF6B35; }
+.scoreDisplay .label { font-size: 11px; color: #666; }
+.levelBadge {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white; padding: 4px 14px; border-radius: 15px;
+    font-size: 14px; font-weight: bold;
+}
+
+/* ==================== 闯关模式目标字提示 ==================== */
+.challengeTarget {
+    position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 11;
+    display: none; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.95); padding: 8px 20px;
+    border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border: 3px solid #FF6B35;
+}
+.challengeTarget .target-label { font-size: 14px; color: #666; }
+.challengeTarget .target-hanzi {
+    font-size: 36px; font-weight: bold; color: #FF6B35;
+    animation: bounceTarget 1s ease-in-out infinite;
+}
+.challengeTarget .target-pinyin { font-size: 30px; font-weight: bold; color: #FF6B35; animation: bounceTarget 1s ease-in-out infinite; }
+@keyframes bounceTarget { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.challengeProgress {
+    position: fixed; top: 85px; left: 50%; transform: translateX(-50%); z-index: 11;
+    display: none; font-size: 16px; font-weight: bold; color: #333;
+    background: rgba(255,255,255,0.9); padding: 4px 16px;
+    border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ==================== 连击与暂停 ==================== */
+.comboDisplay {
+    position: fixed; top: 75px; left: 50%; transform: translateX(-50%);
+    font-size: 22px; font-weight: bold; color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;
+    opacity: 0; transition: all 0.3s;
+}
+.comboDisplay.show { opacity: 1; animation: comboPulse 0.5s ease-out; }
+@keyframes comboPulse { 0% { transform: translateX(-50%) scale(1.5); } 100% { transform: translateX(-50%) scale(1); } }
+.pauseBtn {
+    position: fixed; top: 15px; right: 15px; z-index: 10;
+    width: 44px; height: 44px; background: rgba(255,255,255,0.9);
+    border: none; border-radius: 50%; font-size: 22px; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ==================== 全屏覆盖层 ==================== */
+.fullscreen-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 100;
+}
+
+/* ==================== 主菜单 ==================== */
+#mainMenu {
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0FF 30%, #E8F8E8 60%, #FFF8DC 100%);
+}
+#mainMenu .gameTitle {
+    font-size: 40px; font-weight: bold; color: #FF6B35;
+    text-shadow: 3px 3px 0 #FFD700, -1px -1px 0 #fff;
+    margin-bottom: 10px; animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+#mainMenu .fruitIcons { font-size: 50px; margin: 10px 0; }
+#mainMenu .fruitIcons span { display: inline-block; animation: floatIcon 3s ease-in-out infinite; }
+#mainMenu .fruitIcons span:nth-child(1) { animation-delay: 0s; }
+#mainMenu .fruitIcons span:nth-child(2) { animation-delay: 0.3s; }
+#mainMenu .fruitIcons span:nth-child(3) { animation-delay: 0.6s; }
+#mainMenu .fruitIcons span:nth-child(4) { animation-delay: 0.9s; }
+#mainMenu .fruitIcons span:nth-child(5) { animation-delay: 1.2s; }
+@keyframes floatIcon { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+.menu-btns { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; align-items: center; }
+.menu-btns .btn-primary { width: 220px; text-align: center; }
+.menu-btns .btn-admin {
+    background: linear-gradient(135deg, #7B68EE, #9B8FFF);
+    box-shadow: 0 4px 15px rgba(123,104,238,0.4);
+    font-size: 18px; padding: 10px 35px;
+}
+
+/* ==================== 难度等级选择 ==================== */
+#gradeSelect {
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0FF 30%, #E8F8E8 60%, #FFF8DC 100%);
+}
+#gradeSelect h2 {
+    font-size: 30px; color: #FF6B35; margin-bottom: 8px;
+    text-shadow: 2px 2px 0 #FFD700;
+}
+.grade-grid { display: flex; flex-direction: column; gap: 14px; max-width: 420px; width: 90%; margin-bottom: 20px; }
+.grade-card {
+    display: flex; align-items: center; gap: 14px;
+    background: white; border-radius: 20px; padding: 16px 20px;
+    cursor: pointer; box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s; border: 3px solid #eee;
+}
+.grade-card:hover { transform: scale(1.03); border-color: #FF6B35; }
+.grade-card.locked { opacity: 0.5; cursor: not-allowed; }
+.grade-card.locked:hover { transform: none; border-color: #eee; }
+.grade-card.completed { border-color: #4CAF50; background: #f0fff0; }
+.grade-card .grade-icon { font-size: 42px; }
+.grade-card .grade-info { flex: 1; }
+.grade-card .grade-name { font-size: 18px; font-weight: bold; color: #333; }
+.grade-card .grade-progress { font-size: 13px; color: #999; margin-top: 3px; }
+.grade-card .grade-arrow { font-size: 24px; color: #ccc; }
+.grade-card.completed .grade-arrow { color: #4CAF50; }
+
+/* ==================== 关卡选择 ==================== */
+#levelSelect {
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0FF 30%, #E8F8E8 60%, #FFF8DC 100%);
+}
+#levelSelect h2 {
+    font-size: 28px; color: #FF6B35; margin-bottom: 5px;
+    text-shadow: 2px 2px 0 #FFD700;
+}
+#levelSelect .grade-label { font-size: 16px; color: #666; margin-bottom: 12px; background: rgba(255,255,255,0.8); padding: 6px 18px; border-radius: 12px; }
+.level-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    max-width: 520px; padding: 0 20px; margin-bottom: 8px;
+}
+.level-card {
+    width: 82px; height: 82px; background: white; border-radius: 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s; border: 3px solid #eee; position: relative;
+}
+.level-card:hover { transform: scale(1.08); border-color: #FF6B35; }
+.level-card .lv-num { font-size: 24px; font-weight: bold; color: #FF6B35; }
+.level-card .lv-name { font-size: 10px; color: #999; margin-top: 1px; }
+.level-card.locked { opacity: 0.4; cursor: not-allowed; }
+.level-card.locked:hover { transform: none; border-color: #eee; }
+.level-card.completed { border-color: #4CAF50; background: #f0fff0; }
+.level-card.completed::after { content: '✅'; position: absolute; top: -6px; right: -6px; font-size: 16px; }
+.level-card.current { border-color: #FFD700; box-shadow: 0 0 12px rgba(255,215,0,0.4); animation: pulseCard 2s ease-in-out infinite; }
+@keyframes pulseCard { 0%,100% { box-shadow: 0 0 8px rgba(255,215,0,0.3); } 50% { box-shadow: 0 0 18px rgba(255,215,0,0.6); } }
+
+/* ==================== Boss 关卡卡片 ==================== */
+.boss-section { width: 100%; max-width: 520px; padding: 0 20px; margin-bottom: 12px; }
+.boss-divider {
+    display: flex; align-items: center; gap: 10px; margin: 8px 0;
+    color: #FF4444; font-size: 14px; font-weight: bold;
+}
+.boss-divider::before, .boss-divider::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, transparent, #FF4444, transparent); }
+.boss-card {
+    width: 100%; background: linear-gradient(135deg, #FF4444, #FF6B6B); border-radius: 18px;
+    padding: 14px 20px; cursor: pointer; box-shadow: 0 3px 15px rgba(255,68,68,0.3);
+    transition: all 0.3s; border: 3px solid #FF4444; display: flex; align-items: center; gap: 12px;
+    color: white;
+}
+.boss-card:hover { transform: scale(1.03); box-shadow: 0 5px 20px rgba(255,68,68,0.5); }
+.boss-card.locked { opacity: 0.4; cursor: not-allowed; }
+.boss-card.locked:hover { transform: none; box-shadow: 0 3px 15px rgba(255,68,68,0.3); }
+.boss-card.completed { background: linear-gradient(135deg, #4CAF50, #8BC34A); border-color: #4CAF50; box-shadow: 0 3px 15px rgba(76,175,80,0.3); }
+.boss-card .boss-icon { font-size: 36px; }
+.boss-card .boss-info { flex: 1; }
+.boss-card .boss-title { font-size: 18px; font-weight: bold; }
+.boss-card .boss-desc { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+.boss-card .boss-status { font-size: 24px; }
+.level-back-btn { margin-top: 10px; }
+
+/* ==================== 游戏介绍 ==================== */
+#gameIntro {
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0FF 30%, #E8F8E8 60%, #FFF8DC 100%);
+}
+#gameIntro h2 {
+    font-size: 28px; color: #FF6B35; margin-bottom: 6px;
+    text-shadow: 2px 2px 0 #FFD700;
+}
+#gameIntro .level-info {
+    font-size: 15px; color: #666; margin-bottom: 10px;
+    background: rgba(255,255,255,0.8); padding: 6px 16px; border-radius: 12px;
+}
+#gameIntro .target-words {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    margin: 10px 0 18px; max-width: 400px;
+}
+#gameIntro .target-word {
+    font-size: 24px; font-weight: bold; color: #FF6B35;
+    background: white; padding: 8px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer; transition: all 0.2s;
+}
+#gameIntro .target-word:hover { transform: scale(1.1); background: #FFF3E0; box-shadow: 0 4px 15px rgba(255,107,53,0.3); }
+#gameIntro .target-word:active { transform: scale(0.95); }
+.intro-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* ==================== 游戏结束 ==================== */
+#gameOverScreen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); display: none;
+    flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+}
+.gameOverBox {
+    background: white; border-radius: 30px; padding: 35px;
+    text-align: center; max-width: 420px; width: 90%;
+    animation: popIn 0.5s ease-out;
+}
+@keyframes popIn { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+.gameOverTitle { font-size: 30px; color: #FF6B35; margin-bottom: 12px; }
+.finalScore { font-size: 20px; color: #333; margin: 8px 0; }
+.finalScore .number { font-size: 48px; font-weight: bold; color: #FFD700; text-shadow: 2px 2px 0 #FF6B35; }
+.wordsLearned { margin: 18px 0; padding: 15px; background: #FFF8DC; border-radius: 15px; }
+.wordsLearned h3 { color: #FF6B35; margin-bottom: 10px; font-size: 17px; }
+.wordList { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.wordTag {
+    padding: 6px 14px; background: linear-gradient(135deg, #FF6B35, #FF8E53);
+    color: white; border-radius: 20px; font-size: 15px; font-weight: bold;
+}
+.gameOverBtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
+.nextLevelHint { color: #4CAF50; font-size: 14px; margin-top: 10px; font-weight: bold; }
+
+/* ==================== 暂停 ==================== */
+#pauseScreen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none;
+    align-items: center; justify-content: center; z-index: 90;
+}
+.pauseBox { background: white; border-radius: 25px; padding: 35px 55px; text-align: center; }
+.pauseBox h2 { color: #FF6B35; font-size: 32px; margin-bottom: 20px; }
+.pauseBox .resumeBtn { padding: 12px 45px; font-size: 22px; color: white; background: #4CAF50; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
+
+/* ==================== 管理平台 ==================== */
+#adminPanel {
+    background: rgba(0,0,0,0.6);
+    display: none; overflow-y: auto;
+}
+.admin-box {
+    background: white; border-radius: 20px; padding: 25px;
+    max-width: 650px; width: 95%; max-height: 85vh; overflow-y: auto;
+    margin: 20px 0;
+}
+.admin-box h2 { color: #7B68EE; font-size: 26px; margin-bottom: 15px; text-align: center; }
+.admin-tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+.admin-tab {
+    flex: 1; min-width: 80px; padding: 8px; text-align: center; font-size: 13px; font-weight: bold;
+    border: none; background: #f0f0f0; cursor: pointer; border-radius: 10px;
+    color: #666; transition: all 0.2s;
+}
+.admin-tab.active { background: #7B68EE; color: white; }
+.admin-section { display: none; }
+.admin-section.active { display: block; }
+.admin-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+.admin-form label { font-size: 14px; font-weight: bold; color: #555; }
+.admin-form input, .admin-form textarea, .admin-form select {
+    padding: 10px 14px; border: 2px solid #ddd; border-radius: 10px;
+    font-size: 15px; font-family: inherit; outline: none;
+    transition: border-color 0.2s;
+}
+.admin-form input:focus, .admin-form textarea:focus, .admin-form select:focus { border-color: #7B68EE; }
+.admin-form textarea { min-height: 80px; resize: vertical; font-family: 'Courier New', monospace; font-size: 15px; }
+.admin-form .form-hint { font-size: 12px; color: #999; }
+.level-list { display: flex; flex-direction: column; gap: 8px; }
+.grade-group { margin-bottom: 16px; }
+.grade-group-title {
+    font-size: 18px; font-weight: bold; color: #7B68EE; margin-bottom: 6px;
+    padding: 8px 12px; background: #f0e6ff; border-radius: 10px;
+}
+.level-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: #f8f8f8; border-radius: 10px;
+    border: 1px solid #eee; transition: all 0.2s; margin-left: 8px;
+}
+.level-item:hover { border-color: #7B68EE; }
+.level-item .li-info { flex: 1; }
+.level-item .li-name { font-size: 15px; font-weight: bold; color: #333; }
+.level-item .li-words { font-size: 12px; color: #999; margin-top: 2px; }
+.level-item .li-actions { display: flex; gap: 5px; }
+.level-item.boss { background: #fff0f0; border-color: #FF6B6B; }
+.word-edit-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.word-edit-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; background: #f0e6ff; border-radius: 12px;
+    font-size: 13px; color: #7B68EE; font-weight: bold;
+}
+.word-edit-tag .remove-word {
+    cursor: pointer; font-size: 14px; color: #999; line-height: 1;
+}
+.word-edit-tag .remove-word:hover { color: #FF4444; }
+.admin-close-btn {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.9);
+    border: none; border-radius: 50%; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ==================== 汉字弹窗 ==================== */
+.wordPopup {
+    position: fixed; background: rgba(255,255,255,0.95);
+    border-radius: 20px; padding: 10px 20px; text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    animation: popupShow 0.4s ease-out; z-index: 50; pointer-events: none;
+}
+@keyframes popupShow { 0% { transform: scale(0) translateY(20px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.wordPopup .hanzi { font-size: 48px; font-weight: bold; color: #FF6B35; line-height: 1.2; }
+.wordPopup .pinyin { font-size: 15px; color: #666; }
+
+/* ==================== 响应式 ==================== */
+@media (max-width: 600px) {
+    #mainMenu .gameTitle { font-size: 32px; }
+    .btn-primary { font-size: 18px; padding: 12px 35px; }
+    .level-card { width: 68px; height: 68px; }
+    .level-card .lv-num { font-size: 20px; }
+    .admin-box { padding: 20px; }
+    .wordPopup .hanzi { font-size: 40px; }
+    .challengeTarget .target-hanzi { font-size: 28px; }
+    .challengeProgress { font-size: 14px; top: 78px; }
+}

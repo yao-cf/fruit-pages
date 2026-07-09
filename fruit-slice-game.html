@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🍉 切水果识字乐园</title>
+    <link rel="stylesheet" href="fruit-slice-game.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- 顶部信息栏 -->
+    <div class="topBar" id="topBar">
+        <div class="scoreDisplay"><div class="label">⭐ 得分</div><div id="score">0</div></div>
+        <div class="levelBadge" id="levelBadge"></div>
+        <div class="scoreDisplay"><div class="label">📚 识字</div><div id="wordCount">0</div></div>
+        <div class="livesDisplay" id="lives" style="display:flex;gap:3px;"></div>
+    </div>
+
+    <!-- 闯关模式目标字 -->
+    <div class="challengeTarget" id="challengeTarget">
+        <span class="target-label">👆 请切：</span>
+        <span class="target-hanzi" id="targetHanzi"></span>
+        <span class="target-pinyin" id="targetPinyin"></span>
+    </div>
+    <div class="challengeProgress" id="challengeProgress"></div>
+    <div class="comboDisplay" id="comboDisplay">🔥 连击!</div>
+    <button class="pauseBtn" id="pauseBtn">⏸</button>
+
+    <!-- 主菜单 -->
+    <div id="mainMenu" class="fullscreen-overlay">
+        <div class="gameTitle">🍉 切水果识字乐园</div>
+        <div class="fruitIcons"><span>🍎</span><span>🍊</span><span>🍇</span><span>🍓</span><span>🍑</span></div>
+        <p style="font-size:17px;color:#555;margin:8px 0;">滑动手指切开水果，学习汉字！</p>
+        <div class="menu-btns">
+            <button class="btn-primary" onclick="showGradeSelect()">🎮 选择关卡</button>
+            <button class="btn-primary btn-admin" onclick="showAdmin()">⚙️ 关卡管理</button>
+        </div>
+    </div>
+
+    <!-- 难度等级选择 -->
+    <div id="gradeSelect" class="fullscreen-overlay" style="display:none;">
+        <h2>🏆 选择难度等级</h2>
+        <p style="font-size:15px;color:#666;margin-bottom:12px;">完成一个等级的全部关卡可解锁下一等级</p>
+        <div class="grade-grid" id="gradeGrid"></div>
+        <button class="btn-green level-back-btn" onclick="showMainMenu()">🏠 返回主菜单</button>
+    </div>
+
+    <!-- 关卡选择 -->
+    <div id="levelSelect" class="fullscreen-overlay" style="display:none;">
+        <h2 id="levelSelectTitle">📋 选择关卡</h2>
+        <div class="grade-label" id="gradeLabel"></div>
+        <div class="level-grid" id="levelGrid"></div>
+        <div class="boss-section" id="bossSection"></div>
+        <button class="btn-green level-back-btn" onclick="showGradeSelect()">↩ 返回等级选择</button>
+    </div>
+
+    <!-- 游戏介绍 -->
+    <div id="gameIntro" class="fullscreen-overlay" style="display:none;">
+        <h2 id="introTitle">第1关</h2>
+        <div class="level-info" id="introDesc"></div>
+        <div style="font-size:15px;color:#666;margin:5px 0;">📖 本关学习以下汉字：</div>
+        <div class="target-words" id="targetWords"></div>
+        <div class="intro-btns">
+            <button class="btn-primary" id="startLearnBtn">📖 开始认字</button>
+            <button class="btn-primary" id="startChallengeBtn" style="background:linear-gradient(135deg,#FF4444,#FF6B6B);box-shadow:0 4px 15px rgba(255,68,68,0.4);">⚔️ 开始闯关</button>
+            <button class="btn-green" onclick="showLevelSelect()">↩ 换关卡</button>
+        </div>
+    </div>
+
+    <!-- 游戏结束 -->
+    <div id="gameOverScreen">
+        <div class="gameOverBox">
+            <div class="gameOverTitle" id="gameOverEmoji">🎉</div>
+            <div class="finalScore">最终得分<br><span class="number" id="finalScore">0</span></div>
+            <div class="wordsLearned">
+                <h3>📚 学到的汉字</h3>
+                <div class="wordList" id="wordList"></div>
+            </div>
+            <div class="nextLevelHint" id="nextLevelHint"></div>
+            <div class="gameOverBtns">
+                <button class="btn-green" id="retryBtn">🔄 再玩一次</button>
+                <button class="btn-sm blue" id="nextLevelBtn" onclick="goNextLevel()" style="display:none;">▶ 下一关</button>
+                <button class="btn-sm blue" onclick="showLevelSelect()">📋 选关卡</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 暂停 -->
+    <div id="pauseScreen">
+        <div class="pauseBox">
+            <h2>⏸ 游戏暂停</h2>
+            <button class="resumeBtn" id="resumeBtn">▶ 继续游戏</button>
+            <br><br>
+            <button class="btn-sm blue" onclick="showLevelSelect()" style="margin-top:8px;">📋 选关卡</button>
+        </div>
+    </div>
+
+    <!-- 管理平台 -->
+    <div id="adminPanel" class="fullscreen-overlay" style="display:none;">
+        <div class="admin-box">
+            <h2>⚙️ 关卡管理平台</h2>
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('grade')">🏆 等级管理</button>
+                <button class="admin-tab" onclick="switchAdminTab('levels')">📋 关卡列表</button>
+                <button class="admin-tab" onclick="switchAdminTab('add')">➕ 添加关卡</button>
+                <button class="admin-tab" onclick="switchAdminTab('reset')">🔄 重置</button>
+            </div>
+            <!-- 关卡列表 -->
+            <div class="admin-section active" id="adminLevels">
+                <div id="adminGradeLevels"></div>
+            </div>
+            <!-- 添加/编辑关卡 -->
+            <div class="admin-section" id="adminAdd">
+                <div class="admin-form">
+                    <input type="hidden" id="editLevelId">
+                    <input type="hidden" id="editIsBoss">
+                    <label>所属等级</label>
+                    <select id="editGradeId"></select>
+                    <label>关卡名称</label>
+                    <input type="text" id="levelName" placeholder="例如：水果大派对">
+                    <label>关卡描述（可选）</label>
+                    <input type="text" id="levelDesc" placeholder="例如：认识常见水果的汉字">
+                    <label>汉字列表（每行格式：汉字 拼音）</label>
+                    <textarea id="wordInputArea" placeholder="每行输入一个汉字和拼音，如：&#10;人 rén&#10;口 kǒu&#10;大 dà&#10;中 zhōng&#10;小 xiǎo" rows="6"></textarea>
+                    <button class="btn-sm green" onclick="batchImportWords()" style="align-self:flex-start;">📋 批量导入全部</button>
+                    <div class="word-edit-list" id="wordEditList"></div>
+                    <div class="form-hint">格式：汉字+空格+拼音，每行一个。点击"批量导入"一次性导入全部</div>
+                    <label>每关目标切水果数</label>
+                    <input type="number" id="levelTarget" value="15" min="5" max="50">
+                    <label>通关所需学字数</label>
+                    <input type="number" id="levelPassWords" value="3" min="1" max="20">
+                    <button class="btn-primary" id="saveLevelBtn" onclick="saveLevel()">💾 保存关卡</button>
+                </div>
+            </div>
+            <!-- 等级管理 -->
+            <div class="admin-section" id="adminGrade">
+                <div class="admin-form">
+                    <label>新增等级名称</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="newGradeName" placeholder="例如：初级、中级、高级">
+                        <button class="btn-sm blue" onclick="addGrade()">➕ 添加等级</button>
+                    </div>
+                </div>
+                <div class="level-list" id="adminGradeList"></div>
+            </div>
+            <!-- 重置 -->
+            <div class="admin-section" id="adminReset">
+                <p style="color:#666;margin-bottom:15px;">重置将恢复默认关卡配置，清除自定义数据和游戏进度。</p>
+                <button class="btn-sm red" onclick="resetAllData()">⚠️ 恢复默认设置</button>
+            </div>
+        </div>
+        <button class="admin-close-btn" onclick="closeAdmin()" style="position:fixed;top:15px;right:15px;z-index:110;">✕</button>
+    </div>
+
+    <script src="fruit-slice-game.js"></script>
+</body>
+</html>
