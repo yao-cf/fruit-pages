@@ -199,17 +199,13 @@ function getGradeProgress(grade) {
 }
 
 function isGradeUnlocked(grade) {
-    if (grade.id === 1) return true;
-    const prevGrade = grades.find(g => g.id === grade.id - 1);
-    if (!prevGrade) return true;
-    return isGradeCompleted(prevGrade);
+    // 所有等级全部解锁
+    return true;
 }
 
 function isLevelUnlocked(grade, levelIndex, isBoss) {
-    if (!isGradeUnlocked(grade)) return false;
-    if (isBoss) return grade.levels.every(lv => isLevelCompleted(grade.id, lv.id, false));
-    if (levelIndex === 0) return true;
-    return isLevelCompleted(grade.id, grade.levels[levelIndex - 1].id, false);
+    // 所有关卡全部解锁
+    return true;
 }
 
 function getBossLevel(grade) {
